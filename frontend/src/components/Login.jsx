@@ -30,7 +30,7 @@ const Login = () => {
                         <input type="password" placeholder='password' 
                           onChange={(e)=>{setPsw(e.target.value)}}  
                           className='pass w-[60%] md:w-[70%] border-2 p-3 mb-5 rounded-sm' />
-                        <input type="submit" value="Continue" className='btn w-[60%] md:w-[70%] h-10 bg-amber-500 rounded-xs text-white text-xl' />
+                        <input type="submit" value="Continue" className='btn w-[60%] md:w-[70%] h-10 bg-blue-600 rounded-xs text-white text-xl' />
                   </form>
                   <h2 className='h2 text-center mt-5 md:text-xl'>Don't have an account?
                     <span className='span underline ml-1 text-blue-500'><Link to='/register'>Register</Link></span>
