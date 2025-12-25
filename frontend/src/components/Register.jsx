@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom';
-import Navbar from './Navbar';
+import Navbar from './layout/Navbar';
 
 const Register = () => {
         const [fullname,setFullname]= useState("");
@@ -22,7 +22,7 @@ const Register = () => {
     <div>
       <Navbar/>   
        <section className='section w-full md:w-full h-full flex items-center mt-15 flex-col md:flex-row md:justify-center md:items-center'>
-               <div className='border-2 w-110 h-110  '>
+               <div className='border-2 w-110 h-110 mt-16  '>
                  <div className="new md:w-full w-full flex flex-col justify-center ">
                    <h1 className='h1 text-center font-medium text-xl mb-5 mt-2 md:flex md:items-center md:justify-center'>Register</h1>
                    <form onSubmit={handleSubmit} className='form flex flex-col items-center md:w-110'>
