@@ -13,28 +13,27 @@ const AdminDashboard = () => {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const loadData = async () => {
+        setLoading(true);
+        try {
+            if (activeTab === 'products') {
+                const response = await ProductService.getAllProducts();
+                setProducts(response.data);
+            } else if (activeTab === 'orders') {
+                const response = await OrderService.getAllOrders();
+                setOrders(response.data);
+            } else if (activeTab === 'users') {
+                const response = await UserService.getAllUsers();
+                setUsers(response.data);
+            }
+        } catch (error) {
+            console.error("Error loading data:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
     loadData();
   }, [activeTab]);
-
-  const loadData = async () => {
-    setLoading(true);
-    try {
-        if (activeTab === 'products') {
-            const response = await ProductService.getAllProducts();
-            setProducts(response.data);
-        } else if (activeTab === 'orders') {
-            const response = await OrderService.getAllOrders();
-            setOrders(response.data);
-        } else if (activeTab === 'users') {
-            const response = await UserService.getAllUsers();
-            setUsers(response.data);
-        }
-    } catch (error) {
-        console.error("Error loading data:", error);
-    } finally {
-        setLoading(false);
-    }
-  };
 
   const handleDeleteProduct = async (id) => {
     if (window.confirm("Are you sure you want to delete this product?")) {

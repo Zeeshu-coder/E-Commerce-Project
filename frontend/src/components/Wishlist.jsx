@@ -9,10 +9,6 @@ const Wishlist = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadWishlist();
-  }, []);
-
   const loadWishlist = () => {
     WishlistService.getWishlist()
       .then(response => {
@@ -24,6 +20,10 @@ const Wishlist = () => {
         setLoading(false);
       });
   };
+
+  useEffect(() => {
+    loadWishlist();
+  }, []);
 
   const handleRemove = (productId) => {
     WishlistService.removeFromWishlist(productId)

@@ -6,10 +6,6 @@ const Orders = () => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadOrders();
-  }, []);
-
   const loadOrders = () => {
     OrderService.getUserOrders()
       .then(response => {
@@ -21,6 +17,10 @@ const Orders = () => {
         setLoading(false);
       });
   };
+
+  useEffect(() => {
+    loadOrders();
+  }, []);
 
   const getStatusColor = (status) => {
     switch (status) {

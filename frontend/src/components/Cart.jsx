@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react'
 import Navbar from './Navbar'
 import CartService from '../services/cart.service'
 import OrderService from '../services/order.service'
+import AddressService from '../services/address.service'
 import { Link, useNavigate } from 'react-router-dom'
-
 import AuthService from '../services/auth.service'
 
 const Cart = () => {
@@ -11,6 +11,10 @@ const Cart = () => {
   const [loading, setLoading] = useState(true);
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [shippingAddress, setShippingAddress] = useState("");
+  const [savedAddresses, setSavedAddresses] = useState([]);
+  const [selectedAddressId, setSelectedAddressId] = useState("");
+  const [useNewAddress, setUseNewAddress] = useState(false);
+  
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,19 +23,60 @@ const Cart = () => {
         navigate("/login");
         return;
     }
-    loadCart();
-  }, []);
 
-  const loadCart = () => {
-    CartService.getCart()
-      .then(response => {
-        setCart(response.data);
-        setLoading(false);
-      })
-      .catch(e => {
-        console.error(e);
-        setLoading(false);
-      });
+    const loadCart = () => {
+        CartService.getCart()
+          .then(response => {
+            setCart(response.data);
+            setLoading(false);
+          })
+          .catch(e => {
+            console.error(e);
+            setLoading(false);
+          });
+      };
+    
+      const loadAddresses = () => {
+        AddressService.getUserAddresses()
+          .then(response => {
+            setSavedAddresses(response.data);
+            // Pre-select default address if exists
+            const defaultAddr = response.data.find(a => a.default);
+            if (defaultAddr) {
+                setSelectedAddressId(defaultAddr.id);
+                setShippingAddress(`${defaultAddr.street}, ${defaultAddr.city}, ${defaultAddr.state} ${defaultAddr.zipCode}, ${defaultAddr.country}`);
+            } else if (response.data.length > 0) {
+                // Select first one if no default
+                setSelectedAddressId(response.data[0].id);
+                const addr = response.data[0];
+                setShippingAddress(`${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}, ${addr.country}`);
+            } else {
+                setUseNewAddress(true);
+            }
+          })
+          .catch(e => {
+            console.error("Error loading addresses", e);
+            setUseNewAddress(true);
+          });
+      };
+
+    loadCart();
+    loadAddresses();
+  }, [navigate]);
+
+  const handleAddressSelect = (e) => {
+    const id = e.target.value;
+    setSelectedAddressId(id);
+    if (id === 'new') {
+        setUseNewAddress(true);
+        setShippingAddress("");
+    } else {
+        setUseNewAddress(false);
+        const addr = savedAddresses.find(a => a.id.toString() === id);
+        if (addr) {
+            setShippingAddress(`${addr.street}, ${addr.city}, ${addr.state} ${addr.zipCode}, ${addr.country}`);
+        }
+    }
   };
 
   const handleRemove = (productId) => {
@@ -178,14 +223,41 @@ const Cart = () => {
                     ) : (
                         <form onSubmit={handleCheckout} className="mt-4 animate-fade-in">
                             <label className="block text-gray-700 text-sm font-bold mb-2">Shipping Address</label>
-                            <textarea
-                                value={shippingAddress}
-                                onChange={(e) => setShippingAddress(e.target.value)}
-                                className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-amber-500 mb-4"
-                                rows="3"
-                                placeholder="Enter your full address"
-                                required
-                            />
+                            
+                            {savedAddresses.length > 0 && (
+                                <div className="mb-3">
+                                    <select 
+                                        value={selectedAddressId} 
+                                        onChange={handleAddressSelect}
+                                        className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-amber-500 mb-2"
+                                    >
+                                        {savedAddresses.map(addr => (
+                                            <option key={addr.id} value={addr.id}>
+                                                {addr.street}, {addr.city}... {addr.default ? '(Default)' : ''}
+                                            </option>
+                                        ))}
+                                        <option value="new">+ Use a new address</option>
+                                    </select>
+                                </div>
+                            )}
+
+                            {useNewAddress && (
+                                <textarea
+                                    value={shippingAddress}
+                                    onChange={(e) => setShippingAddress(e.target.value)}
+                                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-amber-500 mb-4"
+                                    rows="3"
+                                    placeholder="Enter full shipping address"
+                                    required
+                                />
+                            )}
+                            
+                            {!useNewAddress && selectedAddressId && (
+                                <div className="p-3 bg-gray-50 border rounded mb-4 text-sm text-gray-600">
+                                    {shippingAddress}
+                                </div>
+                            )}
+
                             <div className="flex gap-2">
                                 <button 
                                     type="button"

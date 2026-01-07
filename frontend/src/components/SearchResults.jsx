@@ -10,14 +10,7 @@ const SearchResults = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get('q');
 
-  useEffect(() => {
-    if (query) {
-        searchProducts(query);
-    }
-  }, [query]);
-
   const searchProducts = (searchQuery) => {
-    setLoading(true);
     ProductService.searchProducts(searchQuery)
       .then(response => {
         setProducts(response.data);
@@ -28,6 +21,12 @@ const SearchResults = () => {
         setLoading(false);
       });
   };
+
+  useEffect(() => {
+    if (query) {
+        searchProducts(query);
+    }
+  }, [query]);
 
   return (
     <div className="min-h-screen bg-gray-50">

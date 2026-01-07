@@ -1,33 +1,19 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import Navbar from './Navbar'
 import ProductService from '../services/product.service'
 import ProductCard from './ProductCard'
 
 const Home = () => {
   const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    retrieveProducts();
-  }, []);
-
-  useEffect(() => {
-    if (selectedCategory === 'All') {
-        setFilteredProducts(products);
-    } else {
-        setFilteredProducts(products.filter(p => p.category === selectedCategory));
-    }
-  }, [selectedCategory, products]);
-
   const retrieveProducts = () => {
     ProductService.getAllProducts()
       .then(response => {
         setProducts(response.data);
-        setFilteredProducts(response.data);
         
         // Extract unique categories
         const uniqueCategories = [...new Set(response.data.map(item => item.category))].filter(Boolean);
@@ -41,6 +27,18 @@ const Home = () => {
         setLoading(false);
       });
   };
+
+  useEffect(() => {
+    retrieveProducts();
+  }, []);
+
+  const filteredProducts = useMemo(() => {
+    if (selectedCategory === 'All') {
+        return products;
+    } else {
+        return products.filter(p => p.category === selectedCategory);
+    }
+  }, [selectedCategory, products]);
 
   return (
     <div className="min-h-screen bg-gray-50">

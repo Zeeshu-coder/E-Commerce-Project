@@ -6,7 +6,7 @@ A full-stack e-commerce application built with Spring Boot (Backend) and React (
 
 - Java 17 or higher
 - Maven
-- Node.js and npm
+- react.js and npm
 - MySQL Database
 
 ## Setup Instructions
@@ -15,17 +15,19 @@ A full-stack e-commerce application built with Spring Boot (Backend) and React (
 
 1. Create a MySQL database named `ecommerce_db`.
 2. Configure your database credentials in `backend/src/main/resources/application.properties` or set environment variables `DB_USERNAME` and `DB_PASSWORD`.
-   
+
    Default credentials in `application.properties`:
+
    - Username: `root`
    - Password: `root`
 
    You can override these by setting environment variables before running the application:
+
    ```bash
    # Linux/Mac
    export DB_USERNAME=your_user
    export DB_PASSWORD=your_password
-   
+
    # Windows (PowerShell)
    $env:DB_USERNAME="your_user"
    $env:DB_PASSWORD="your_password"
